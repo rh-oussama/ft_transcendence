@@ -8,6 +8,7 @@ services:
       - "443:443"
     volumes:
       - ./devops/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./tests/:/usr/share/nginx/html
     # depends_on:
     #   - game-service
     #   - tournament-service

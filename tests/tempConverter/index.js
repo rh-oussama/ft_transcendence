@@ -1,7 +1,3 @@
-
-
-
-
 let result;
 let isCeli;
 let isFahr;

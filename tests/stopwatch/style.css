@@ -1,0 +1,79 @@
+* {
+    padding: 0%;
+    margin: 0%;
+}
+
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: lightgray;
+}
+
+h1 {
+    color: rgb(63, 63, 63);
+    margin-top: 40px;
+    margin-bottom: 32px;
+    font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-shadow: 1px 2px 8px #bfc0c0;
+}
+
+#TimerContainer {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    width: 80vw;
+    text-align: center;
+    border: 2px black solid ;
+    border-radius: 6px;
+}
+
+#ButtonContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+h3 {
+    margin: 30px;
+    font-family: monospace;
+    font-size: 10vw;
+    color: rgb(117, 103, 103);
+}
+
+input[type="button"] {
+    padding: 10px 24px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 100px;
+    background: #22223b;
+    color: #fff;
+}
+input[type="button"]:hover {
+    background: #4a4e69;
+}
+input[type="button"][value="Start"] {
+    background: #28a745;
+}
+input[type="button"][value="Stop"] {
+    background: #dc3545;
+}
+input[type="button"][value="Reset"] {
+    background: #007bff;
+}
+input[type="button"][value="Start"]:hover {
+    background: #218838;
+}
+input[type="button"][value="Stop"]:hover {
+    background: #c82333;
+}
+input[type="button"][value="Reset"]:hover {
+    background: #0056b3;
+}

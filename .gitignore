@@ -1,6 +1,9 @@
 public/
 **/public/
 
+dist/
+**/dist/
+
 node_modules/
 **/node_modules/
 
@@ -17,3 +20,6 @@ migrate/
 
 !**/prisma/
 !**/prisma/schema.prisma
+
+package-lock.json
+**/package-lock.json

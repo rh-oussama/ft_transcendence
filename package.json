@@ -6,7 +6,8 @@
   "scripts": {
     "fclean:all": "npm --prefix backend/services/game-service run fclean && npm --prefix frontend run fclean",
     "build:all": "npm --prefix backend/services/game-service run build && npm --prefix frontend run build",
-    "install:all": "npm --prefix backend/services/game-service && npm --prefix frontend install"
+    "install-build:all": "npm run install:all && npm run build:all",
+    "install:all": "npm --prefix backend/services/game-service install && npm --prefix frontend install"
   },
   "keywords": [],
   "author": "",

@@ -1,1 +1,30 @@
-{}
+{
+  "name": "game-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/app.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/app.js",
+    "fclean": "rm -rf node_modules && rm -rf dist",
+    "re": "npm run build && npm run start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "@types/ws": "^8.18.1",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@fastify/websocket": "^11.2.0",
+    "@prisma/client": "^6.13.0",
+    "fastify": "^5.4.0",
+    "prisma": "^6.13.0",
+    "ws": "^8.18.3"
+  }
+}

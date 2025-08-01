@@ -20,6 +20,10 @@ fclean:
 	@$(DOCKER_COMPOSE) down --rmi all --volumes --remove-orphans
 	@docker system prune -af --volumes
 
+build:
+	@$(DOCKER_COMPOSE) build --no-cache
+
+
 re: clean build start
 
 .PHONY: all start stop build fclean re

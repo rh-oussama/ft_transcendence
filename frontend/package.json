@@ -1,1 +1,19 @@
-{}
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/app.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json && cp ./src/index.html ./public/index.html",
+    "fclean": "rm -rf ./public",
+    "watch": "nodemon --watch src --ext js,ts,tsx,css,html --exec \"npm run build\""
+  },  
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+  },
+  "dependencies": {
+  }
+}

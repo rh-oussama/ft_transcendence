@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "start": "node dist/app.js",
-    "fclean": "rm -rf node_modules && rm -rf dist",
+    "fclean": "rm -rf node_modules && rm -rf dist && rm -rf package-lock.json",
     "re": "npm run build && npm run start"
   },
   "keywords": [],

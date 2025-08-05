@@ -7,13 +7,18 @@ import websocketRoutes from './routes/websocketRoutes.js'
 const fastify = Fastify({
   logger: {
     level: 'trace',
-    // transport: { 
-    //   target: 'pino-pretty' 
-    // }
+    transport: {
+      target: 'pino-pretty',
+      options: {
+        colorize: true,
+        singleLine: true,
+        ignore: 'pid,hostname,time'
+      }
+    }
   }
-})
-
+});
 export const logger = fastify.log;
+
 
 
 

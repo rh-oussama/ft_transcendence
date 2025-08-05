@@ -1,3 +1,5 @@
+import { redirectTo } from "../App.js";
+
 export function SelectGameMode(): string {
   return `
     <section style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: #f7f7f7; padding: 20px;">
@@ -15,6 +17,7 @@ export function SelectGameMode(): string {
     </section>
   `;
 }
+
 
 
 
@@ -41,8 +44,7 @@ export function initSelectGameMode(): void {
       const data = await res.json();
 
       if (res.ok) {
-        history.pushState({}, "", "/game");
-        window.dispatchEvent(new Event("popstate"));
+        redirectTo("/game")
       } else {
         alert("Error: " + (data.error || "Unknown error"));
       }

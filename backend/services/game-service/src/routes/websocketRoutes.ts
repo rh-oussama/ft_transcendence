@@ -10,46 +10,53 @@ interface JWTPayload extends jwt.JwtPayload {
 }
 
 
-function authCheck(token: string): string | null {
+
+function authCheck(token: string): JWTPayload | null {
   try {
     const payload = jwt.verify(token, SECRET) as JWTPayload;
-    console.log(`payload received: ${JSON.stringify(payload)}`);
     if (!payload.player_id) {
-      console.log("JWT valid but player_id missing in payload");
+      logger.warn("JWT valid but player_id missing in payload");
       return null;
     }
     if (!players.has(payload.player_id)) {
-      console.log(`Player '${payload.player_id}' does not exist in players map.`);
+      logger.warn(`Player '${payload.player_id}' does not exist in players map.`);
       return null;
     }
-    return payload.player_id;
+    return payload;
   } catch {
-    console.log("JWT is not valid.");
+    logger.warn("JWT is not valid.");
     return null;
   }
 }
 
 
+let websocketConnectionCount = 0;
+
 export default async function websocketRoutes(fastify: FastifyInstance) {
   fastify.get("/ws/game", { websocket: true }, (socket: WebSocket, req: FastifyRequest) => {
     
+    
+    
+    logger.info(`====== Websocket start ${websocketConnectionCount} ======`);
 
-    logger.info("WebSocket connection attempt");
+    websocketConnectionCount++;
+
 
     const token = (req.query as any).jwt;
-    logger.info(`JWT from query: ${token}`);
+    const jwtPayload = authCheck(token);
+    logger.info(`JWT payload for player: ${JSON.stringify(jwtPayload)}`);
 
-    const player_id = authCheck(token);
-    logger.info(`authCheck result: ${player_id}`);
 
-    if (!player_id) {
+
+
+    if (!jwtPayload) {
       logger.warn("Authentication failed, closing socket.");
       socket.close();
       return;
     }
 
+    const player_id = jwtPayload.player_id;
     const player = players.get(player_id);
-    logger.info(`Player from map: ${JSON.stringify(player)}`);
 
     if (player && player.ws === undefined) {
       player.ws = socket;
@@ -59,20 +66,21 @@ export default async function websocketRoutes(fastify: FastifyInstance) {
     }
 
     socket.on("message", (message: Buffer) => {
-      const messageStr = message.toString();
-      logger.info(`Received: ${messageStr}`);
-      socket.send("{test: hello}");
+      try {
+        const msgObj = JSON.parse(message.toString());
+        logger.info(`Received from player '${player_id}': ${JSON.stringify(msgObj)}`);
+      } catch {
+        logger.warn(`Received invalid JSON from player '${player_id}': ${message.toString()}`);
+      }
     });
 
     socket.on("close", () => {
-      logger.info("Client disconnected");
       if (player) {
         player.ws = undefined;
         logger.info(`WebSocket removed from player '${player_id}'`);
       }
     });
-
-
-
   });
+  logger.info(`====== Websocket end ======`);
 }
+

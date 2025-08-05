@@ -1,5 +1,11 @@
 import { renderRoute } from "./routes/router.js";
 
+// redirect to a path (SPA)
+export const redirectTo = (path: string) => {
+    window.history.pushState({}, "", path);
+    window.dispatchEvent(new Event("popstate"));
+}
+
 
 // Handle browser navigation click on link
 document.addEventListener("click", (e: MouseEvent) => {

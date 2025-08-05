@@ -1,18 +1,17 @@
 export type Route = {
   path: string;
   render: () => string;
+  init?: () => void;
 };
 
-import { Home } from "../pages/Home.js";
+import { Home, initHome } from "../pages/Home.js";
 import { error404 } from "../pages/404.js";
-// import { Game } from "../pages/Game.js";
-// import { Login } from "./pages/Login.js";
-// import { Register } from "./pages/Register.js";
-// import { Dashboard } from "./components/Dashboard.js";
-// import { NewGame } from "./pages/NewGame,js";
+import { Game, initGame } from "../pages/Game.js";
+import { SelectGameMode, initSelectGameMode } from "../pages/SelectGameMode.js";
 
 export const routes: Route[] = [
-  { path: "/", render: Home },
-  // { path: "/game", render: Game },
-  { path: "/404", render: error404},
+  { path: "/", render: Home, init: initHome },
+  { path: "/select-mode", render: SelectGameMode, init: initSelectGameMode },
+  { path: "/game", render: Game, init: initGame},
+  { path: "/404", render: error404 },
 ];

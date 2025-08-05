@@ -1,0 +1,29 @@
+POST http://localhost:3000/v1/create-game
+Content-Type: application/json
+
+{
+    "player_id": "11",
+    "mode": "matchmaking"
+}
+
+
+
+
+####
+POST http://localhost:3000/v1/create-game
+Content-Type: application/json
+
+{
+    "player_id": "lo",
+    "mode": "matchmaking"
+}
+
+#####
+POST http://localhost:3000/v1/generate-jwt
+Content-Type: application/json
+
+{
+  "username": "your_username"
+}
+
+

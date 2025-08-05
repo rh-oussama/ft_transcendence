@@ -7,13 +7,15 @@
     "fclean:all": "npm --prefix backend/services/game-service run fclean && npm --prefix frontend run fclean",
     "build:all": "npm --prefix backend/services/game-service run build && npm --prefix frontend run build",
     "install-build:all": "npm run install:all && npm run build:all",
-    "install:all": "npm --prefix backend/services/game-service install && npm --prefix frontend install"
+    "install:all": "npm --prefix backend/services/game-service install && npm --prefix frontend install",
+    "watch:all": "concurrently \"npm --prefix backend/services/game-service run watch\" \"npm --prefix frontend run watch\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "devDependencies": {
+    "concurrently": "^9.2.0",
     "nodemon": "^3.1.10"
   }
 }

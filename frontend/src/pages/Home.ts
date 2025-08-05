@@ -1,16 +1,55 @@
-
-
-
 export function Home(): string {
   return `
-    <section class="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div class="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center">
-        <h1 class="text-4xl font-extrabold text-indigo-700 mb-4">Welcome to the Home Page</h1>
-        <a href="/login" class="inline-block px-6 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition">
-          Get Started
-        </a>
-      </div>
+    <section style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: #f7f7f7; padding: 20px;">
+      <input
+        id="username"
+        type="text"
+        placeholder="username"
+        style="padding:10px; font-size:16px; width:300px; margin-bottom:10px; border:1px solid #ccc; border-radius:4px;"
+      />
+      <button
+        id="generateBtn"
+        style="padding:10px 20px; font-size:16px; border:none; background:#3b82f6; color:white; border-radius:4px; cursor:pointer;"
+      >
+        &#9658;
+      </button>
     </section>
   `;
 }
 
+export function initHome(): void {
+  const btn = document.getElementById('generateBtn');
+  const input = document.getElementById('username') as HTMLInputElement;
+  
+  if (!btn || !input) return;
+  
+  btn.addEventListener('click', async () => {
+    const player_id = input.value.trim();
+    if (!player_id) {
+      alert('Please enter a username');
+      return;
+    }
+
+    try {
+      const res = await fetch('/v1/generate-jwt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ player_id }),
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        const token = data.data.token;
+        localStorage.setItem('jwt_token', token);
+        localStorage.setItem('player_id', player_id);
+        history.pushState({}, '', '/select-mode');
+        window.dispatchEvent(new Event('popstate'));
+      } else {
+        alert('Error: ' + (data.error || 'Unknown error'));
+      }
+    } catch (e: any) {
+      alert('Fetch error: ' + e.message);
+    }
+  });
+
+}

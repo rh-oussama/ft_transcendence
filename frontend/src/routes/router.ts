@@ -1,5 +1,5 @@
-import { routes} from "./routes.js";
-
+import { routes } from "./routes.js";
+import { initHome } from "../pages/Home.js";
 
 function findRoute(path: string) {
   return routes.find((route) => route.path === path) || routes.find((route) => route.path === "/404");
@@ -10,5 +10,8 @@ export function renderRoute(path: string) {
   const app = document.getElementById("app");
   if (app && route) {
     app.innerHTML = route.render();
+    if (typeof route.init === "function") {
+      route.init();
+    }
   }
 }

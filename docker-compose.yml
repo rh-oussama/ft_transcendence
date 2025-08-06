@@ -12,7 +12,9 @@ services:
     # depends_on:
     #   - game-service
     #   - tournament-service
-    network_mode: host
+
+    # on linux do this and change the ngnix conf also``
+    # network_mode: host
 
     # networks:
     #   - transcendence-network

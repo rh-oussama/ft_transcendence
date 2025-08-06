@@ -10,16 +10,13 @@ function findRoute(path: string) {
 
 
 export function renderRoute(path: string): void {
-  // Clean up current route if exists
   if (currentRoute?.component.cleanup) {
     currentRoute.component.cleanup();
   }
 
-  // Find and set new route
   const newRoute = findRoute(path);
   currentRoute = newRoute;
 
-  // Render new route
   const app = document.getElementById("app");
   if (!app) return;
 

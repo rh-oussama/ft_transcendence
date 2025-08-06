@@ -40,7 +40,6 @@ const ChatMessageSchema = z.object({
   payload: z.object({
     message: z.string(),
     from: z.string(),
-    to: z.string().optional(),
   }),
 });
 

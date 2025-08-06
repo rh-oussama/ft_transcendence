@@ -1,6 +1,6 @@
 import { logger, players} from "../app.js";
 import { SECRET } from "../routes/gameRoutes.js";
-import { JWTPayload, WSMessages } from "../types/schemas.js";
+import { JWTPayload, AuthMessage } from "../types/schemas.js";
 
 import { WebSocket } from "ws";
 import jwt, { JwtPayload } from "jsonwebtoken";
@@ -32,7 +32,7 @@ export function handleAuth(socket: WebSocket, token: string): JWTPayload | null 
 
   if (!jwtPayload) {
     logger.warn("Authentication failed, closing socket.");
-    const wsMsg: WSMessages["Auth"] = {
+    const wsMsg: AuthMessage = {
       type: "auth",
       payload: {
         status: "fail"
@@ -46,7 +46,7 @@ export function handleAuth(socket: WebSocket, token: string): JWTPayload | null 
   }
 
   // Send success auth message
-  const successMsg: WSMessages["Auth"] = {
+  const successMsg: AuthMessage = {
     type: "auth",
     payload: {
       status: "success"

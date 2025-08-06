@@ -13,6 +13,7 @@ export interface room {
   players: player[];
   mode: "friend" | "matchmaking" | "ai";
   data?: GameState;
+  broadcast: (message: WSMessage) => void;
   createdAt: Date;
 }
 
@@ -53,6 +54,8 @@ export interface CreateGameResponseBody {
 
 
 
+// use zod for running parsind and type
+ 
 const AuthMessageSchema = z.object({
   type: z.literal("auth"),
   payload: z.object({
@@ -82,7 +85,6 @@ const ChatMessageSchema = z.object({
   payload: z.object({
     message: z.string(),
     from: z.string(),
-    to: z.string().optional(),
   }),
 });
 
@@ -93,24 +95,20 @@ const RejectMessageSchema = z.object({
   }),
 });
 
-type AuthMessage = z.infer<typeof AuthMessageSchema>;
-type StateMessage = z.infer<typeof StateMessageSchema>;
-type ChatMessage = z.infer<typeof ChatMessageSchema>;
-type RejectMessage = z.infer<typeof RejectMessageSchema>;
+export type AuthMessage = z.infer<typeof AuthMessageSchema>;
+export type StateMessage = z.infer<typeof StateMessageSchema>;
+export type ChatMessage = z.infer<typeof ChatMessageSchema>;
+export type RejectMessage = z.infer<typeof RejectMessageSchema>;
 
-export const WSMessageSchemas = {
-  Auth: AuthMessageSchema,
-  State: StateMessageSchema,
-  Chat: ChatMessageSchema,
-  Reject: RejectMessageSchema
-} as const;
+export const WSMessageSchema = z.union([
+  StateMessageSchema,
+  ChatMessageSchema,
+]);
 
-export type WSMessages = {
-  Auth: AuthMessage;
-  State: StateMessage;
-  Chat: ChatMessage;
-  Reject: RejectMessage;
-};
+export type WSMessage = z.infer<typeof WSMessageSchema>;
+
+
+/////////////////
 
 export interface JWTPayload extends jwt.JwtPayload {
   player_id: string;

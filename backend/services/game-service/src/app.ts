@@ -23,6 +23,7 @@ const fastify = Fastify({
   }
 });
 
+
 export const logger = fastify.log;
 
 

@@ -1,6 +1,6 @@
 import { Component } from '../types/schemas.js';
 import { GameCanvas } from '../components/GameCanvas';
-import { GameChat } from '../components/gameChat.js';
+import { GameChat, addChatMessage } from '../components/gameChat.js';
 import { GameScoreBoard } from '../components/gameScoreBoard.js';
 import { redirectTo } from "../App.js";
 import { parseWSMessage } from "../types/schemas.js";
@@ -72,7 +72,7 @@ function handleGameMessage(event: MessageEvent) {
         // Handle game state update
         break;
       case "chat":
-        // Handle chat message
+        addChatMessage(message.payload.from, message.payload.message)
         break;
       case "reject":
         redirectTo("/");

@@ -1,6 +1,7 @@
 
-import { players, logger } from "../app.js";
+import { players, logger, rooms } from "../app.js";
 import { WebSocket } from "ws";
+import { WSMessageSchema } from "../types/schemas.js";
 
 
 export function setupPlayerSocket(socket: WebSocket, player_id: string) {
@@ -15,10 +16,37 @@ export function setupPlayerSocket(socket: WebSocket, player_id: string) {
 
   socket.on("message", (message: Buffer) => {
     try {
-      const msgObj = JSON.parse(message.toString());
+      const msgObj = WSMessageSchema.parse(JSON.parse(message.toString()));
       logger.info(`Received from player '${player_id}': ${JSON.stringify(msgObj)}`);
+      
+      logger.info("test0011");
+
+      console.log(player?.roomId);
+      const room = player?.roomId ? rooms.get(player.roomId) : undefined;
+      if (!room) {
+        logger.warn(`Room not found for player ${player_id}`);
+        return;
+      }
+      logger.info("test000");
+
+      switch (msgObj.type) {
+      case "state":
+        break;
+      case "chat":
+      logger.info("inside chat");
+        room.broadcast({
+          type: "chat",
+            payload: {
+                message: msgObj.payload.message,
+                from: player_id
+            }
+        });
+        break;
+    }
+
+
     } catch {
-      logger.warn(`Received invalid JSON from player '${player_id}': ${message.toString()}`);
+      logger.warn(`Receiveddddd invalid JSON from player '${player_id}': ${message.toString()}`);
     }
   });
 

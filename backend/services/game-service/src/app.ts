@@ -2,6 +2,11 @@ import Fastify, { FastifyRequest } from 'fastify'
 import websocket from '@fastify/websocket'
 import gameRoutes from './routes/gameRoutes.js'
 import websocketRoutes from './routes/websocketRoutes.js'
+import { player, room } from './types/schemas.js'
+
+export const matchmakingQueue: player[] = [];
+export const rooms = new Map<string, room>();
+export const players = new Map<string, player>();
 
 
 const fastify = Fastify({
@@ -17,8 +22,8 @@ const fastify = Fastify({
     }
   }
 });
-export const logger = fastify.log;
 
+export const logger = fastify.log;
 
 
 

@@ -1,17 +1,29 @@
+import { Component } from '../types/schemas.js';
+import { Home } from '../pages/Home.js';
+import { error404 } from '../pages/404.js';
+import { Game } from '../pages/Game.js';
+import { SelectGameMode } from '../pages/SelectGameMode.js';
+
 export type Route = {
   path: string;
-  render: () => string;
-  init?: () => void;
+  component: Component;
 };
 
-import { Home, initHome } from "../pages/Home.js";
-import { error404 } from "../pages/404.js";
-import { Game, initGame } from "../pages/Game.js";
-import { SelectGameMode, initSelectGameMode } from "../pages/SelectGameMode.js";
-
 export const routes: Route[] = [
-  { path: "/", render: Home, init: initHome },
-  { path: "/select-mode", render: SelectGameMode, init: initSelectGameMode },
-  { path: "/game", render: Game, init: initGame},
-  { path: "/404", render: error404 },
+  { 
+    path: "/", 
+    component: Home
+  },
+  { 
+    path: "/select-mode", 
+    component: SelectGameMode
+  },
+  { 
+    path: "/game", 
+    component: Game
+  },
+  { 
+    path: "/404", 
+    component: error404
+  }
 ];

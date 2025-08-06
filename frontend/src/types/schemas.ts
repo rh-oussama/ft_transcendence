@@ -1,5 +1,16 @@
 import { z } from "zod";
 
+
+// componant
+
+export type Component = {
+  render: () => string;
+  init?: () => void;
+  cleanup?: () => void;
+};
+
+// use zod for running parsind and type
+ 
 const AuthMessageSchema = z.object({
   type: z.literal("auth"),
   payload: z.object({

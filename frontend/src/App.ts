@@ -6,7 +6,6 @@ export const redirectTo = (path: string) => {
     window.dispatchEvent(new Event("popstate"));
 }
 
-
 // Handle browser navigation click on link
 document.addEventListener("click", (e: MouseEvent) => {
   console.log("enter click event");
@@ -29,4 +28,3 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log("enter first load");
   renderRoute(window.location.pathname);
 });
-

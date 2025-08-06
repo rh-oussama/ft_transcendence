@@ -1,4 +1,4 @@
-import {matchmakingQueue, rooms, players} from "../services/handleGameCreation.js"
+import {matchmakingQueue, rooms, players} from "../app.js"
 
 
 export function printGameState(): void {

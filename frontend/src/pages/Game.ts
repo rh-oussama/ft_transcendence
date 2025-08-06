@@ -1,46 +1,78 @@
-import {gameScoreBoard, gameCanvas, gameChat} from "../components/GameCanvas.js"
+import { Component } from '../types/schemas.js';
+import { GameCanvas } from '../components/GameCanvas';
+import { GameChat } from '../components/gameChat.js';
+import { GameScoreBoard } from '../components/gameScoreBoard.js';
 import { redirectTo } from "../App.js";
-import { WSMessage, parseWSMessage } from "../types/schemas.js";
+import { parseWSMessage } from "../types/schemas.js";
 
 export let gameSocket: WebSocket | null = null;
 
-
-
-
-
-// export function Game(): string {
-//   return `
-//     <div id="game-container" style="min-height: 100vh; background: #1E1E2F; display: flex; flex-direction: column;">
-//       ${gameScoreBoard()}
-//       <div id="game-content" style="display: flex; flex: 1; gap: 2rem; padding: 2rem;">
-//         ${gameCanvas()}
-//         ${gameChat()}
-//       </div>
-//     </div>
-//   `;
-// }
-
-
-export function Game(): string {
-  return `
-    <div id="game-container" style="min-height: 100vh; background: #1E1E2F; display: flex; flex-direction: column;">
-      <div id="game-content" style="display: flex; flex: 1; gap: 2rem; padding: 2rem;">
-        ${gameChat()}
+export const Game: Component = {
+  render: () => `
+    <div id="game-container" class="min-h-screen bg-[#1E1E2F] flex flex-col">
+      <div id="scoreboard">
+        ${GameScoreBoard.render()}
+      </div>
+      <div id="game-content" class="flex flex-1 gap-8 p-8">
+        ${GameCanvas.render()}
+        ${GameChat.render()}
       </div>
     </div>
-  `;
-}
+  `,
 
+  init: () => {
+    initWebSocket();
+    
+    // init child
+    GameCanvas.init?.();
+    GameChat.init?.();
+  },
+
+  cleanup: () => {
+    if (gameSocket) {
+      gameSocket.close();
+      gameSocket = null;
+    }
+    
+    // clean child
+    GameCanvas.cleanup?.();
+    GameChat.cleanup?.();
+  }
+};
+
+function initWebSocket() {
+  const token = localStorage.getItem('jwt_token');
+  if (!token) {
+    alert('No JWT token found. Please log in again.');
+    return;
+  }
+
+  gameSocket = new WebSocket(`ws://localhost:3000/ws/game?jwt=${token}`);
+  
+  gameSocket.onopen = () => console.log('Game WebSocket connected');
+  gameSocket.onmessage = handleGameMessage;
+  gameSocket.onerror = (err) => {
+    console.error('Game WebSocket error', err);
+    redirectTo("/");
+  };
+}
 
 function handleGameMessage(event: MessageEvent) {
   try {
     const message = parseWSMessage(JSON.parse(event.data));
+    console.log('Parsed message:', message);
+    
     switch (message.type) {
       case "auth":
+        if (message.payload.status === "fail") {
+          redirectTo("/");
+        }
         break;
       case "state":
+        // Handle game state update
         break;
       case "chat":
+        // Handle chat message
         break;
       case "reject":
         redirectTo("/");
@@ -52,33 +84,4 @@ function handleGameMessage(event: MessageEvent) {
     console.error("Invalid WS message:", err);
     gameSocket?.close();
   }
-}
-
-
-
-
-export function initGame(): void {
-  const token = localStorage.getItem('jwt_token');
-  if (!token) {
-    alert('No JWT token found. Please log in again.');
-    return;
-  }
-
-  gameSocket = new WebSocket(`ws://localhost:3000/ws/game?jwt=${token}`);
-  (window as any).gameSocket = gameSocket; // global 
-
-  gameSocket.onopen = () => {
-    console.log('Game WebSocket connected');
-  };
-
-  // gameSocket.onmessage = handleGameMessage;
-
-  gameSocket.onerror = (err) => {
-    console.error('Game WebSocket error', err);
-    redirectTo("/");
-  };
-
-  gameSocket.onclose = () => {
-    redirectTo("/");
-  };
 }

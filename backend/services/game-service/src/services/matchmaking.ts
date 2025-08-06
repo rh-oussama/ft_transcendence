@@ -1,6 +1,6 @@
-import {matchmakingQueue, rooms, players} from "./handleGameCreation.js"
 import {player, room} from "../types/schemas.js"
 import { v4 as uuidv4 } from 'uuid';
+import { matchmakingQueue, players, rooms } from "../app.js";
 
 
 export function addToMatchmakingQueue(newPlayer: player): string | null {

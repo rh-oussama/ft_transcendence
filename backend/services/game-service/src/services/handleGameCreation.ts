@@ -1,13 +1,9 @@
 import { FastifyInstance } from 'fastify';
 import { player, CreateGameRequestBody, room } from "../types/schemas.js";
 import { addToMatchmakingQueue} from "./matchmaking.js"
-import { logger } from '../app.js';
+import { logger, players } from '../app.js';
 
 
-
-export const matchmakingQueue: player[] = [];
-export const rooms = new Map<string, room>();
-export const players = new Map<string, player>();
 
 
 

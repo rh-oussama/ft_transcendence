@@ -1,6 +1,6 @@
-import { Component, WSMessage } from '../types/schemas.js';
-import { gameSocket } from '../pages/Game.js';
-
+import { Component } from '../types/schemas.js';
+import { ServerWSMessage, ClientChatMessage } from '../types/schemas.js';
+import { gameInstance } from '../pages/Game.js';
 
 export const GameChat: Component = {
   render: () => `
@@ -57,15 +57,14 @@ export const GameChat: Component = {
       const message = input.value.trim();
       if (!message) return;
 
-      if (gameSocket && gameSocket.readyState === WebSocket.OPEN) {
-        const chatMessage = {
-          type: "chat" as const,
+      if (gameInstance?.ws && gameInstance?.ws.readyState === WebSocket.OPEN) {
+        const chatMessage: ClientChatMessage  = {
+          type: "client_chat" as const,
           payload: {
             message: message,
-            from: localStorage.getItem('player_id') || 'unknown'
           }
         };
-        gameSocket.send(JSON.stringify(chatMessage));
+        gameInstance?.ws.send(JSON.stringify(chatMessage));
         input.value = '';
       } else {
         console.error('WebSocket is not connected');

@@ -1,6 +1,6 @@
 import { Component } from '../types/schemas.js';
 
-export const error404: Component = {
+export const error404Page: Component = {
   render: () => `
     <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center sm:pt-0">
       <div class="max-w-xl mx-auto sm:px-6 lg:px-8">

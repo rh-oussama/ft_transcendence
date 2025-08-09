@@ -1,7 +1,7 @@
 import { Component } from "../types/schemas.js";
 import { redirectTo } from "../App.js";
 
-export const Home: Component = {
+export const HomePage: Component = {
   render: () => `
     <section style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: #f7f7f7; padding: 20px;">
       <input 

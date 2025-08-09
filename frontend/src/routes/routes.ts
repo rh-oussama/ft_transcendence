@@ -1,8 +1,8 @@
 import { Component } from '../types/schemas.js';
-import { Home } from '../pages/Home.js';
-import { error404 } from '../pages/404.js';
-import { Game } from '../pages/Game.js';
-import { SelectGameMode } from '../pages/SelectGameMode.js';
+import { HomePage } from '../pages/Home.js';
+import { error404Page } from '../pages/404.js';
+import { GamePage } from '../pages/Game.js';
+import { SelectGameModePage } from '../pages/SelectGameMode.js';
 
 export type Route = {
   path: string;
@@ -12,18 +12,18 @@ export type Route = {
 export const routes: Route[] = [
   { 
     path: "/", 
-    component: Home
+    component: HomePage
   },
   { 
     path: "/select-mode", 
-    component: SelectGameMode
+    component: SelectGameModePage
   },
   { 
     path: "/game", 
-    component: Game
+    component: GamePage
   },
   { 
     path: "/404", 
-    component: error404
+    component: error404Page
   }
 ];

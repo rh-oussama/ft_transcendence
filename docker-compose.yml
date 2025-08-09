@@ -14,7 +14,7 @@ services:
     #   - tournament-service
 
     # on linux do this and change the ngnix conf also``
-    # network_mode: host
+    network_mode: host
 
     # networks:
     #   - transcendence-network

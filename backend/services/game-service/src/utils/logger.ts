@@ -24,9 +24,6 @@ export function printGameState(): void {
   if (rooms.size > 0) {
     for (const [roomId, room] of rooms.entries()) {
       let roomLine = `= Room ${roomId}: Mode - ${room.mode}, Players - ${room.players.map(p => p.id).join(', ')}, Created At - ${room.createdAt.toISOString()}`;
-      if (room.data) {
-        roomLine += `, Data - ${JSON.stringify(room.data)}`;
-      }
       lines.push(roomLine);
     }
   } else {
@@ -37,7 +34,7 @@ export function printGameState(): void {
   lines.push("= Active Players:");
   if (players.size > 0) {
     for (const [playerId, player] of players.entries()) {
-      lines.push(`=   ${player.id} (ID: ${playerId}) (ROOMID: ${player.roomId})`);
+      lines.push(`=   ${player.id} (ID: ${playerId}) (ROOMID: ${player?.roomInstance?.id})`);
     }
   } else {
     lines.push("=   No active players.");

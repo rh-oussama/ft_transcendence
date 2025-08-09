@@ -1,7 +1,7 @@
 
 import { players, logger, rooms } from "../app.js";
 import { WebSocket } from "ws";
-import { WSMessageSchema } from "../types/schemas.js";
+import { ClientWSMessageSchema } from "../types/clientSchemasWs.js";
 
 
 export function setupPlayerSocket(socket: WebSocket, player_id: string) {
@@ -16,32 +16,34 @@ export function setupPlayerSocket(socket: WebSocket, player_id: string) {
 
   socket.on("message", (message: Buffer) => {
     try {
-      const msgObj = WSMessageSchema.parse(JSON.parse(message.toString()));
-      logger.info(`Received from player '${player_id}': ${JSON.stringify(msgObj)}`);
+      const msg = ClientWSMessageSchema.parse(JSON.parse(message.toString()));
+      logger.info(`Received from player '${player_id}': ${JSON.stringify(msg)}`);
       
-      logger.info("test0011");
+      console.log(player?.roomInstance?.id);
 
-      console.log(player?.roomId);
-      const room = player?.roomId ? rooms.get(player.roomId) : undefined;
-      if (!room) {
-        logger.warn(`Room not found for player ${player_id}`);
-        return;
-      }
-      logger.info("test000");
+      switch (msg.type) {
 
-      switch (msgObj.type) {
-      case "state":
-        break;
-      case "chat":
-      logger.info("inside chat");
-        room.broadcast({
-          type: "chat",
-            payload: {
-                message: msgObj.payload.message,
-                from: player_id
-            }
-        });
-        break;
+        // handle auth ()
+        case "client_auth":
+          break;
+
+  
+        // handle chat 
+        case "client_chat":
+          logger.info("inside client_chat");
+          player?.roomInstance?.broadcast({
+            type: "server_chat",
+              payload: {
+                  message: msg.payload.message,
+                  from: player_id
+              }
+          });
+          break;
+        
+        // handle client (paddle move)
+        case "client_input":
+          player?.roomInstance?.Game?.handlePlayerInput(player, msg);
+          break;
     }
 
 

@@ -1,5 +1,6 @@
 import { Component } from "../types/schemas";
 
+
 export const GameCanvas: Component = {
   render: () => {
     return `
@@ -18,7 +19,8 @@ export const GameCanvas: Component = {
   
   init: () => {
     const canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
-    if (!canvas) return;
+    if (!canvas)
+      return;
     
     // Canvas initialization logic
   },
@@ -27,4 +29,3 @@ export const GameCanvas: Component = {
     // Cleanup canvas listeners/animations
   }
 };
-

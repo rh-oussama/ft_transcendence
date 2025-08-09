@@ -10,55 +10,128 @@ export type Component = {
 };
 
 // use zod for running parsind and type
- 
-const AuthMessageSchema = z.object({
-  type: z.literal("auth"),
+
+const ClientInputMessageSchema = z.object({
+  type: z.literal("client_input"),
+  payload: z.object({
+    action: z.enum(["paddle_move", "paddle_stop"]),
+    direction: z.enum(["up", "down"]).optional(),
+  }),
+});
+
+const ClientChatMessageSchema = z.object({
+  type: z.literal("client_chat"),
+  payload: z.object({
+    message: z.string(),
+  }),
+});
+
+const ClientAuthMessageSchema = z.object({
+  type: z.literal("client_auth"),
+  payload: z.object({
+    token: z.string(),
+  }),
+});
+
+
+export type ClientInputMessage = z.infer<typeof ClientInputMessageSchema>;
+export type ClientChatMessage = z.infer<typeof ClientChatMessageSchema>;
+export type ClientAuthMessage = z.infer<typeof ClientAuthMessageSchema>;
+
+
+
+
+
+
+
+
+
+
+
+///////////// no need to parse 
+
+
+
+
+export const BallSchema = z.object({
+  x: z.number(),
+  y: z.number(),
+  radius: z.number().default(8),
+  velocityX: z.number().optional(),
+  velocityY: z.number().optional(),
+});
+
+export const PaddleSchema = z.object({
+  x: z.number(),
+  y: z.number(),
+  width: z.number().default(10),
+  height: z.number().default(80),
+});
+
+
+export const PlayerSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  score: z.number(),
+  side: z.enum(["left", "right"]),
+  paddle: PaddleSchema,
+  
+});
+
+
+const ServerAuthMessageSchema = z.object({
+  type: z.literal("server_auth"),
   payload: z.object({
     status: z.enum(["success", "fail"]),
   }),
 });
 
-const StateMessageSchema = z.object({
-  type: z.literal("state"),
+const ServerStateMessageSchema = z.object({
+  type: z.literal("server_state"),
   payload: z.object({
-    gameStatus: z.enum(["waiting", "playing", "finished"]),
-    players: z.array(z.string()),
-    ball: z.object({
-      x: z.number(),
-      y: z.number(),
-    }),
-    paddles: z.object({
-      a: z.object({ y: z.number() }),
-      b: z.object({ y: z.number() }),
-    }),
-    scores: z.record(z.string(), z.number()),
+    gameStatus: z.enum(["waiting", "playing", "paused", "finished"]),
+    players: z.array(PlayerSchema).refine(
+      (players) => players.length === 0 || players.length === 2
+    ),
+    ball: BallSchema,
   }),
 });
 
-const ChatMessageSchema = z.object({
-  type: z.literal("chat"),
+const ServerChatMessageSchema = z.object({
+  type: z.literal("server_chat"),
   payload: z.object({
     message: z.string(),
     from: z.string(),
   }),
 });
 
-const RejectMessageSchema = z.object({
-  type: z.literal("reject"),
+const ServerRejectMessageSchema = z.object({
+  type: z.literal("server_reject"),
   payload: z.object({
     reason: z.string(),
   }),
 });
 
-export const WSMessageSchema = z.union([
-  AuthMessageSchema,
-  StateMessageSchema,
-  ChatMessageSchema,
-  RejectMessageSchema,
+
+export type ServerAuthMessage = z.infer<typeof ServerAuthMessageSchema>;
+export type ServerStateMessage = z.infer<typeof ServerStateMessageSchema>;
+export type ServerChatMessage = z.infer<typeof ServerChatMessageSchema>;
+export type ServerRejectMessage = z.infer<typeof ServerRejectMessageSchema>;
+
+////////////////
+
+
+export type Player = z.infer<typeof PlayerSchema>;
+export type Paddle = z.infer<typeof PaddleSchema>;
+export type Ball = z.infer<typeof BallSchema>;
+
+
+
+export const ServerWSMessageSchema = z.union([
+  ServerStateMessageSchema,
+  ServerChatMessageSchema,
+  ServerAuthMessageSchema,
+  ServerRejectMessageSchema,
 ]);
 
-export type WSMessage = z.infer<typeof WSMessageSchema>;
-
-export function parseWSMessage(data: unknown): WSMessage {
-  return WSMessageSchema.parse(data);
-}
+export type ServerWSMessage = z.infer<typeof ServerWSMessageSchema>;

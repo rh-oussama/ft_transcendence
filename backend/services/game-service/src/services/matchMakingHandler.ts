@@ -25,32 +25,28 @@ export function addToMatchmakingQueue(newPlayer: player): string | null {
     logger.info(`Player ${newPlayer.id} added to matchmaking queue. Queue size: ${matchmakingQueue.length}`);
 
     if (matchmakingQueue.length >= 2) {
-        return createMatch();
+        const twoPlayers = matchmakingQueue.splice(0, 2);
+        return createMatch(twoPlayers[0], twoPlayers[1], "matchmaking");
     }
     return null;
 }
 
-function createMatch(): string {
+export function createMatch(playerOne: player, playerTwo: player, type : ("matchmaking"| "friend")): string {
     try {
-        const twoPlayers = matchmakingQueue.splice(0, 2);                
         const roomId = uuidv4();
         const newRoom: room = {
             id: roomId,
-            players: twoPlayers,
-            mode: "matchmaking",
+            players: [playerOne, playerTwo],
+            mode: type,
             createdAt: new Date(),
             broadcast: function(message) {
-                logger.info(`Broadcasting message to room ${this.id}`);
                 this.players.forEach(player => {
                     if (player.ws?.readyState === WebSocket.OPEN) {
                         try {
                             player.ws.send(JSON.stringify(message));
-                            logger.debug(`Message sent to player ${player.id}`);
                         } catch (error) {
-                            logger.error(`Failed to send message to player ${player.id}:`, error);
                         }
                     } else {
-                        logger.warn(`Player ${player.id} WebSocket not ready`);
                     }
                 });           
             }
@@ -58,10 +54,10 @@ function createMatch(): string {
 
         newRoom.Game = new Game(newRoom);
         rooms.set(roomId, newRoom);
-        twoPlayers.forEach(player => {
+        [playerOne, playerTwo].forEach(player => {
             player.roomInstance = newRoom;
         });
-        logger.info(`Match created with room ID: ${roomId}, players: ${twoPlayers.map(p => p.id).join(', ')}`);
+        logger.info(`Match created with room ID: ${roomId}, players: ${playerOne.id}, ${playerTwo.id}`);
         newRoom.Game.start();
         return roomId;
         

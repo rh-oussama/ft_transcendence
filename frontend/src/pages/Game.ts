@@ -26,6 +26,7 @@ export const GamePage: Component = {
     gameInstance.start();
     GameCanvas.init?.();
     GameChat.init?.();
+    GameScoreBoard.init?.();
   },
 
   cleanup: () => {

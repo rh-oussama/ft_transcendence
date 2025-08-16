@@ -33,16 +33,16 @@ const ClientAuthMessageSchema = z.object({
   }),
 });
 
+const ClientExitMessageSchema = z.object({
+  type: z.literal("client_exit"),
+})
+
+
 
 export type ClientInputMessage = z.infer<typeof ClientInputMessageSchema>;
 export type ClientChatMessage = z.infer<typeof ClientChatMessageSchema>;
 export type ClientAuthMessage = z.infer<typeof ClientAuthMessageSchema>;
-
-
-
-
-
-
+export type ClientExitMessage = z.infer<typeof ClientExitMessageSchema>;
 
 
 

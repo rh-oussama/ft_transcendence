@@ -1,8 +1,8 @@
 import { FastifyInstance } from 'fastify';
 import { player, CreateGameRequestBody, room } from "../types/schemas.js";
-import { addToMatchmakingQueue} from "./matchmaking.js"
+import { addToMatchmakingQueue} from "./matchMakingHandler.js"
 import { logger, players } from '../app.js';
-
+import { inviteGameHandler } from './inviteGameHandler.js';
 
 
 
@@ -46,47 +46,9 @@ export function handleGameCreation(data: CreateGameRequestBody) {
   }
   
 
-  /*
-  // If you decide to support friend mode with logging, you can uncomment and add logging as needed:
   if (mode === "friend") {
-    if (!opponent_username) {
-      logger.error("opponent_username is required for friend mode");
-      return {
-        statusCode: 400,
-        code: "ERROR",
-        error: "opponent_username is required for friend mode",
-      };
-    }
-    const opponent = [...players.values()].find(
-      (p) => p.username === opponent_username
-    );
-    if (!opponent) {
-      logger.error("Opponent not found", { opponent_username });
-      return {
-        statusCode: 404,
-        code: "ERROR",
-        error: "Opponent not found",
-      };
-    }
-    const roomId = uuidv4();
-    const newRoom: room = {
-      id: roomId,
-      players: [current_player, opponent],
-      mode: "friend",
-      createdAt: new Date(),
-    };
-    rooms.set(roomId, newRoom);
-    logger.info({ roomId }, "Friend game created");
-    return {
-      statusCode: 202,
-      code: "SUCCESS",
-      data: {
-        status: "waiting",
-        message: "Friend game created, waiting for opponent to join",
-      },
-    };
+    inviteGameHandler(player_id, opponent_username);
   }
-  */
 
   logger.error("Unsupported game creation mode", { mode });
   return {

@@ -1,12 +1,24 @@
 import { PlayerCor, room, BallCor, player } from "../types/schemas.js";
 import { ClientInputMessage } from "../types/clientSchemasWs.js";
 import { console } from "inspector";
+import { Numeric } from "zod/v4/core/util.cjs";
+
+import { matchmakingQueue, players, rooms } from "../app.js";
+
 
 class Game {
+    
+    TOTAL_ROUND: number = 5;
     CANVA_WIDTH: number = 960;
     CANVA_HEIGHT: number = 540;
+
+    // ball speed and move
     BALL_SPEED: number = 5;
+
+    // paddle spped
     PADDLE_SPEED: number = 8;
+    
+    // offset from the edge
     PADDLE_OFFSET: number = 10;
     
     
@@ -15,6 +27,7 @@ class Game {
     room: room;
     gameLoop: NodeJS.Timeout | null = null;
     isRunning: boolean = false;
+    isGameReady: boolean = false;
     lastScorer: "left" | "right" | null = null;
 
 
@@ -30,13 +43,15 @@ class Game {
         const [player1, player2] = roomInstance.players;
 
         // ball position (init)
+        const {x, y} = this.calculateVelocity(40);
         this.ball = {
             x: this.CANVA_WIDTH / 2,
             y: this.CANVA_HEIGHT / 2,
             radius: 10,
-            velocityX: 5,
-            velocityY: 3
+            velocityX: x,
+            velocityY: y
         };
+    
 
         // player position (init)
         this.players = [
@@ -72,12 +87,29 @@ class Game {
     }
 
 
+    calculateVelocity(angleDegrees: number) {
+        const angleRadians = angleDegrees * (Math.PI / 180);
+        const velocityX = this.BALL_SPEED * Math.cos(angleRadians);
+        const velocityY = this.BALL_SPEED * Math.sin(angleRadians);
+        return { x: velocityX, y: velocityY };
+    }
+
     start(): void {
-        if (this.isRunning) return;
+        if (this.isRunning)
+            return;
         
         this.isRunning = true;
         this.gameLoop = setInterval(() => {
+            
+            if (this.isGameReady === false) {
+                if (this.room.players.every((p) => p.ws !== undefined)) {
+                    this.isGameReady = true;
+                } else {
+                    return;
+                }
+            }
             this.update();
+
         }, 1000 / 30);
         
         console.log(`Game ${this.room.id} started`);
@@ -98,7 +130,7 @@ class Game {
             this.updatePaddles();
             this.checkCollisions();
             this.checkScore();
-            this.broadcastGameState();
+            this.broadcastGameState("playing");
         } catch (error) {
             console.error(`Game ${this.room.id} update error:`, error);
             this.stop();
@@ -122,7 +154,7 @@ class Game {
         if (!leftPlayer || !rightPlayer)
             return;
 
-        // left collsio
+        // left collsion
         if (this.ball.x - this.ball.radius <= (leftPlayer.paddle.x + leftPlayer.paddle.width) && 
             this.ball.velocityX < 0 &&
             this.ball.y >= leftPlayer.paddle.y &&
@@ -143,10 +175,10 @@ class Game {
 
     checkScore(): void {
         if (this.ball.x > this.CANVA_WIDTH) {
-        const leftPlayer = this.players.find((p) => p.side === "left");
-        if (leftPlayer) {
-            leftPlayer.score++;
-            this.resetBall("left");
+            const leftPlayer = this.players.find((p) => p.side === "left");
+            if (leftPlayer) {
+                leftPlayer.score++;
+                this.resetBall("left");
             }
         }
 
@@ -160,6 +192,20 @@ class Game {
     }
     
     resetBall(lastScorer: "left" | "right"): void {
+        const hasWinner = this.players.some(p => p.score >= 5);
+        if (hasWinner) {
+            this.stop();
+            this.broadcastGameState("finished");
+            this.players.forEach((p) => {
+                const playerTmp = players.get(p.id);
+                playerTmp?.ws?.close();
+                players.delete(p.id);
+        });
+        rooms.delete(this.room.id);
+        return;
+    }
+
+        this.BALL_SPEED += 1;
         this.ball.x = this.CANVA_WIDTH / 2;
         this.ball.y = this.CANVA_HEIGHT / 2;
 
@@ -197,7 +243,6 @@ class Game {
             if (inputState && inputState.isMoving && inputState.direction) {
                 const moveAmount = inputState.direction === "up" ? -this.PADDLE_SPEED : this.PADDLE_SPEED;
                 const newY = player.paddle.y + moveAmount;
-                console.log(`new y ${newY}`);
                 if (newY >= 0 && newY <= this.CANVA_HEIGHT - player.paddle.height) {
                     player.paddle.y = newY;
                 }
@@ -206,11 +251,11 @@ class Game {
     }
 
 
-    broadcastGameState(): void {
+    broadcastGameState(state: ("waiting" | "playing" | "finished")): void {
         const gameState = {
             type: "server_state" as const,
             payload: {
-                gameStatus: "playing" as const,
+                gameStatus: state,
                 players: this.players,
                 ball: this.ball
             }
@@ -220,3 +265,5 @@ class Game {
 }
 
 export default Game;
+
+

@@ -29,7 +29,6 @@ export function authCheck(token: string): JWTPayload | null {
 
 export function handleAuth(socket: WebSocket, token: string): JWTPayload | null {
   const jwtPayload = authCheck(token);
-  logger.info(`JWT payload for player: ${JSON.stringify(jwtPayload)}`);
 
   if (!jwtPayload) {
     logger.warn("Authentication failed, closing socket.");

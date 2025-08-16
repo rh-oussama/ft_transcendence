@@ -2,11 +2,12 @@ import { FastifyInstance, FastifyRequest } from "fastify";
 import { WebSocket } from "ws";
 import { setupPlayerSocket } from "../controllers/setupPlayerSocket.js";
 import { handleAuth } from "../services/wsAuthHandler.js";
+import { logger } from "../app.js";
 
 
 export default async function websocketRoutes(fastify: FastifyInstance) {
   
-  fastify.get("/ws/game", { websocket: true }, (socket: WebSocket, req: FastifyRequest) => {
+  fastify.get("/v1/ws/game", { websocket: true }, (socket: WebSocket, req: FastifyRequest) => {
     const token = (req.query as any).jwt;
     const jwtPayload = handleAuth(socket, token);
     
@@ -16,4 +17,6 @@ export default async function websocketRoutes(fastify: FastifyInstance) {
   
   });
 }
+
+
 

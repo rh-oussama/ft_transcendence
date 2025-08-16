@@ -1,7 +1,7 @@
 import { Player, Ball, Paddle, ClientInputMessage, ServerWSMessage, ServerStateMessage } from '../types/schemas.js';
 import { redirectTo } from '../App.js';
 import { addChatMessage } from '../components/gameChat.js';
-
+import { updateGameScore } from '../components/gameScoreBoard.js';
 
 export class Game {
     
@@ -95,7 +95,13 @@ export class Game {
     handleServerMessage(message: ServerWSMessage) {
         switch (message.type) {
             case 'server_state':
-                this.updateGameState(message);
+                if (message.payload.gameStatus === "playing")
+                    this.updateGameState(message);
+                if (message.payload.gameStatus === "finished"){
+                    this.disconnectWs();
+                    this.updateGameState(message);
+
+                }
                 break;
             
             case 'server_auth':
@@ -123,6 +129,7 @@ export class Game {
         this.gameState = gameStatus;
         this.players = players;
         this.ball = ball;
+        updateGameScore(players[1].score, players[0].score)
     }
 
     render() {
@@ -150,7 +157,7 @@ export class Game {
             );
         });
 
-        if (this.ball) {
+        if (this.ball && this.gameState === "playing") {
             this.ctx.beginPath();
             this.ctx.arc(this.ball.x, this.ball.y, this.ball.radius, 0, Math.PI * 2);
             this.ctx.fill();
@@ -159,9 +166,6 @@ export class Game {
         if (this.gameState === 'waiting') {
             this.ctx.font = '24px Arial';
             this.ctx.fillText('Waiting for players...', this.canvas.width / 2 - 100, this.canvas.height / 2);
-        } else if (this.gameState === 'paused') {
-            this.ctx.font = '24px Arial';
-            this.ctx.fillText('Game Paused', this.canvas.width / 2 - 70, this.canvas.height / 2);
         } else if (this.gameState === 'finished') {
             this.ctx.font = '24px Arial';
             this.ctx.fillText('Game Finished', this.canvas.width / 2 - 80, this.canvas.height / 2);
@@ -177,7 +181,6 @@ export class Game {
         requestAnimationFrame(() => this.renderLoop());
     }
 
-    // 
     
     connectWs() {
         const token = localStorage.getItem('jwt_token');
@@ -185,7 +188,7 @@ export class Game {
             alert('No JWT token found. Please log in again.');
             return;
         }
-        this.ws = new WebSocket(`ws://localhost:3000/ws/game?jwt=${token}`);
+        this.ws = new WebSocket(`ws://localhost/v1/ws/game?jwt=${token}`);
 
         this.ws.onopen = () => {
             console.log('Game WebSocket connected');
@@ -194,7 +197,7 @@ export class Game {
         this.ws.onmessage = (event) => {
             try {
                 const message: ServerWSMessage = JSON.parse(event.data);
-                console.log(`recived json: ${JSON.stringify(message)}`)
+                // console.log(`recived json: ${JSON.stringify(message)}`)
                 this.handleServerMessage(message);
             } catch (error) {
                 console.error('Failed to parse server message:', error);
@@ -215,8 +218,6 @@ export class Game {
     disconnectWs() {
         if (this.ws) {
             this.ws.close();
-            // window.removeEventListener('keydown', this.handleKeyDown);
-            // window.removeEventListener('keyup', this.handleKeyUp);
             this.ws = null;
         }
     }

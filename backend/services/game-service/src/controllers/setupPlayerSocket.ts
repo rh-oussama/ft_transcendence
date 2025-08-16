@@ -4,6 +4,7 @@ import { WebSocket } from "ws";
 import { ClientWSMessageSchema } from "../types/clientSchemasWs.js";
 
 
+
 export function setupPlayerSocket(socket: WebSocket, player_id: string) {
   const player = players.get(player_id);
 
@@ -22,11 +23,6 @@ export function setupPlayerSocket(socket: WebSocket, player_id: string) {
       console.log(player?.roomInstance?.id);
 
       switch (msg.type) {
-
-        // handle auth ()
-        case "client_auth":
-          break;
-
   
         // handle chat 
         case "client_chat":
@@ -39,8 +35,8 @@ export function setupPlayerSocket(socket: WebSocket, player_id: string) {
               }
           });
           break;
-        
-        // handle client (paddle move)
+
+          // handle client (paddle move)
         case "client_input":
           player?.roomInstance?.Game?.handlePlayerInput(player, msg);
           break;

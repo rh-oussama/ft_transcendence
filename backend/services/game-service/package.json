@@ -8,7 +8,7 @@
     "start": "node dist/app.js",
     "fclean": "rm -rf node_modules && rm -rf dist && rm -rf package-lock.json",
     "re": "npm run build && npm run start",
-    "watch": "nodemon --watch src --ext js,ts,tsx,css,html --exec \"npm run re\""
+    "watch": "nodemon --watch src --ext js,ts,tsx,css,html --exec npm run re"
   },
   "keywords": [],
   "author": "",

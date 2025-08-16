@@ -24,6 +24,11 @@ build:
 	@$(DOCKER_COMPOSE) build --no-cache
 
 
-re: clean build start
+re: 
+	@docker stop $$(docker ps -aq) 2>/dev/null || true
+	@docker rm $$(docker ps -aq) 2>/dev/null || true
+	@$(DOCKER_COMPOSE) build --no-cache
+	@$(DOCKER_COMPOSE) up -d
+
 
 .PHONY: all start stop build fclean re

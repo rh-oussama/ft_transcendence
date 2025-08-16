@@ -29,6 +29,8 @@ export const logger = fastify.log;
 
 
 
+
+
 await fastify.register(websocket)
 await fastify.register(gameRoutes)
 await fastify.register(websocketRoutes)

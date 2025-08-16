@@ -1,6 +1,8 @@
+
+name: tr
 services:
   nginx:
-    container_name: tr-nginx
+    container_name: nginx
     build:
       context: ./devops/nginx
     ports:
@@ -9,49 +11,22 @@ services:
     volumes:
       - ./devops/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
       - ./frontend/public:/usr/share/nginx/html
-    # depends_on:
-    #   - game-service
+    depends_on:
+      - game-service
     #   - tournament-service
+    networks:
+      - transcendence-network
 
-    # on linux do this and change the ngnix conf also``
-    network_mode: host
-
-    # networks:
-    #   - transcendence-network
-
-  # game-service:
-  #   container_name: game-service
-  #   build:
-  #     context: ./backend/services/game-service
-  #   ports:
-  #     - "3003:3003"
-  #   volumes:
-  #     - ./backend/services/game-service:/app
-  #     - ./databases:/app/data
-  #   networks:
-  #     - transcendence-network
-  #   environment:
-  #     - NODE_ENV=development
-  #     - DATABASE_TYPE=sqlite
-  #     - DATABASE_PATH=/app/data/game.db
-
-  # tournament-service:
-  #   container_name: tournament-service
-  #   build:
-  #     context: ./backend/services/tournament-service
-  #   ports:
-  #     - "3004:3004"
-  #   volumes:
-  #     - ./backend/services/tournament-service:/app
-  #     - ./databases:/app/data
-  #   networks:
-  #     - transcendence-network
-  #   environment:
-  #     - NODE_ENV=development
-  #     - DATABASE_TYPE=sqlite
-  #     - DATABASE_PATH=/app/data/tournament.db
+  game-service:
+    container_name: game-service
+    build:
+      context: ./backend/services/game-service
+    volumes:
+      - ./backend/services/game-service/src:/app/src
+    networks:
+      - transcendence-network
 
 
 networks:
   transcendence-network:
-    driver: host
+    driver: bridge

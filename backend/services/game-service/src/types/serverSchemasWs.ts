@@ -12,11 +12,9 @@ const ServerAuthMessageSchema = z.object({
 const ServerStateMessageSchema = z.object({
   type: z.literal("server_state"),
   payload: z.object({
-    gameStatus: z.enum(["waiting", "playing", "paused", "finished"]),
-    players: z.array(PlayerSchema).refine(
-      (players) => players.length === 0 || players.length === 2
-    ),
-    ball: BallSchema,
+    gameStatus: z.enum(["waiting", "playing", "finished"]),
+    players: z.array(PlayerSchema).refine((players) => players.length === 0 || players.length === 2),
+    ball: BallSchema
   }),
 });
 
@@ -27,6 +25,16 @@ const ServerChatMessageSchema = z.object({
     from: z.string(),
   }),
 });
+
+const ServerExitMessageSchema = z.object({
+  type: z.literal("server_chat"),
+  payload: z.object({
+    message: z.string(),
+    from: z.string(),
+  }),
+});
+
+export type ServerExitMessage = z.infer<typeof ServerChatMessageSchema>;
 
 
 
@@ -43,3 +51,4 @@ export const ServerWSMessageSchema = z.union([
 ]);
 
 export type ServerWSMessage = z.infer<typeof ServerWSMessageSchema>;
+

@@ -1,17 +1,19 @@
 import { Component } from "../types/schemas.js";
+import { gameInstance } from "../pages/Game.js";
+import { ClientExitMessage } from "../types/schemas.js";
 
 export const GameScoreBoard: Component = {
     render: () => `
         <header class="w-full px-8 py-3 bg-[#1E1E2F] flex justify-between items-center shadow-lg">
             <h1 class="text-lg font-semibold tracking-wide text-gray-200">PingPong</h1>
             <div class="flex items-center gap-6 bg-[#2E2E3E] rounded-3xl px-6 py-3 text-sm font-semibold text-gray-300 shadow-sm select-none">
-                <img src="https://i.pravatar.cc/32?img=15" alt="Player 1" class="w-8 h-8 rounded-full border border-[#5A6A9B]" />
-                <span id="player1-name" class="text-[#7486b3]">Nour</span>
+                <img src="" alt="Player 1" class="w-8 h-8 rounded-full border border-[#5A6A9B]" />
+                <span id="player1-name" class="text-[#7486b3]">user2</span>
                 <span id="player1-score" class="text-lg font-bold">5</span>
                 <span class="text-gray-500">:</span>
                 <span id="player2-score" class="text-lg font-bold">4</span>
-                <span id="player2-name" class="text-[#7486b3]">Khalid</span>
-                <img src="https://i.pravatar.cc/32?img=18" alt="Player 2" class="w-8 h-8 rounded-full border border-[#5A6A9B]" />
+                <span id="player2-name" class="text-[#7486b3]">user1</span>
+                <img src="" alt="Player 2" class="w-8 h-8 rounded-full border border-[#5A6A9B]" />
             </div>
             <div class="flex items-center gap-6 font-mono text-sm text-gray-400">
                 <span id="ping" class="flex items-center gap-2">
@@ -37,17 +39,16 @@ export const GameScoreBoard: Component = {
     
     init: () => {
         const exitBtn = document.getElementById('exit-btn');
-        const infoBtn = document.getElementById('info-btn');
 
         if (exitBtn) {
             exitBtn.addEventListener('click', () => {
-                console.log('Exit game');
-            });
-        }
-
-        if (infoBtn) {
-            infoBtn.addEventListener('click', () => {
-                console.log('Show game info');
+                console.log("HAAAAA");
+                if (gameInstance) {
+                    const msg : ClientExitMessage = {
+                        type: "client_exit"
+                    }
+                    gameInstance?.ws?.send(JSON.stringify(msg));
+                }
             });
         }
     },
@@ -62,5 +63,17 @@ export const GameScoreBoard: Component = {
         if (infoBtn) {
             infoBtn.removeEventListener('click', () => {});
         }
+    }
+};
+
+export const updateGameScore = (user1Score: number, user2Score: number): void => {
+    const player1ScoreElement = document.getElementById('player1-score');
+    const player2ScoreElement = document.getElementById('player2-score');
+    
+    if (player1ScoreElement) {
+        player1ScoreElement.textContent = user1Score.toString();
+    }
+    if (player2ScoreElement) {
+        player2ScoreElement.textContent = user2Score.toString();
     }
 };
